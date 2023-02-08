@@ -61,8 +61,10 @@ metadata:
   namespace: istio-system
   labels:
     app: jaeger
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - name: http-query
       port: 80
