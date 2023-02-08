@@ -8,6 +8,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name       = "default"
     node_count = 3
     vm_size    = "Standard_D2s_v5"
+    vnet_subnet_id  = azurerm_subnet.aks.id
   }
 
   identity {
@@ -21,6 +22,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 }
+
+resource "azurerm_role_assignment" "contributor" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_kubernetes_cluster.aks.identity.0.principal_id
+}
+
 
 resource "local_file" "kubeconfig" {
   depends_on   = [azurerm_kubernetes_cluster.aks]

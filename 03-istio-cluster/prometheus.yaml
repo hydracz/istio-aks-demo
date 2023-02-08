@@ -443,11 +443,9 @@ spec:
     spec:
       enableServiceLinks: true
       serviceAccountName: prometheus
-      imagePullSecrets:
-        - name: myregistrykey
       containers:
         - name: prometheus-server-configmap-reload
-          image: "${REG_PREFIX}/configmap-reload:v0.5.0"
+          image: "jimmidyson/configmap-reload:v0.5.0"
           imagePullPolicy: "IfNotPresent"
           args:
             - --volume-dir=/etc/config
@@ -460,7 +458,7 @@ spec:
               readOnly: true
 
         - name: prometheus-server
-          image: "${REG_PREFIX}/prometheus:v2.38.0"
+          image: "prom/prometheus:v2.34.0"
           imagePullPolicy: "IfNotPresent"
           args:
             - --storage.tsdb.retention.time=15d
@@ -514,47 +512,3 @@ spec:
         - name: storage-volume
           emptyDir:
             {}
----
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: prometheus-gateway
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-  - port:
-      number: 80
-      name: http-prom
-      protocol: HTTP
-    hosts:
-    - "prometheus.${INGRESS_DOMAIN}"
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: prometheus-vs
-  namespace: istio-system
-spec:
-  hosts:
-  - "prometheus.${INGRESS_DOMAIN}"
-  gateways:
-  - prometheus-gateway
-  http:
-  - route:
-    - destination:
-        host: prometheus
-        port:
-          number: 9090
----
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: prometheus
-  namespace: istio-system
-spec:
-  host: prometheus
-  trafficPolicy:
-    tls:
-      mode: DISABLE
