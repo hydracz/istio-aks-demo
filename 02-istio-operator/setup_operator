@@ -1,0 +1,6 @@
+kubectl create ns istio-operator
+
+istioctl operator init \
+  --tag=1.15.4 \
+  --operatorNamespace istio-operator \
+  --watchedNamespaces istio-system
