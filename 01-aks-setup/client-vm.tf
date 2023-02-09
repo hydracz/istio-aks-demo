@@ -42,3 +42,7 @@ resource "azurerm_windows_virtual_machine" "client" {
     version   = "22621.521.220910"
   }
 }
+
+output "windows_client_public_ip" {
+  value = azurerm_windows_virtual_machine.client.public_ip_address
+}

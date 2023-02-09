@@ -1,0 +1,19 @@
+#import kubeconfig generated
+
+export KUBECONFIG=../01-aks-setup/kubeconfig
+
+# create istio cluster
+kubectl create ns istio-system
+kubectl apply -f istio-cluster.yaml
+
+#create istio cluster addon and expose via istio ingress gateway
+export INGRESS_DOMAIN="example.com"
+
+envsubst < kiali.yaml      | kubectl apply -n istio-system -f -
+envsubst < prometheus.yaml | kubectl apply -n istio-system -f -
+envsubst < grafana.yaml    | kubectl apply -n istio-system -f -
+envsubst < jaeger.yaml     | kubectl apply -n istio-system -f -
+
+
+#expose via azure internal lb
+kubectl apply -n istio-system -f service-azure-ilb.yaml

@@ -1,3 +1,5 @@
+export KUBECONFIG=../01-aks-setup/kubeconfig
+
 kubectl create ns istio-operator
 
 istioctl operator init \
